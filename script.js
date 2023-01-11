@@ -16,9 +16,15 @@ const clearField = () => {
 };
 
 const render = (id, product, price, category) => {
+  let indianCurrency = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumSignificantDigits: 3,
+  });
+  const formattedPrice = indianCurrency.format(price);
   const template = `<tr id=${id}>
                 <td id="product_${id}">${product}</td>
-                <td id="price_${id}">${price}</td>
+                <td id="price_${id}">${formattedPrice}</td>
                 <td id="category_${id}">${category}</td>
                 <td>
                   <button
@@ -35,7 +41,17 @@ const render = (id, product, price, category) => {
                   </button>
                 </td>`;
 
-  return template;
+  const entertainment = document.getElementById("entertainmentBody");
+  const food = document.getElementById("foodBody");
+  const mobilePhone = document.getElementById("phoneBody");
+
+  if (category === "Entertainment") {
+    entertainment.innerHTML += template;
+  } else if (category === "Food") {
+    food.innerHTML += template;
+  } else {
+    mobilePhone.innerHTML += template;
+  }
 };
 
 const productBtn = document.getElementById("addbtn");
@@ -58,38 +74,7 @@ productBtn.addEventListener("click", async () => {
       });
 
       clearField();
-      const entertainment = document.getElementById("entertainmentBody");
-      const food = document.getElementById("foodBody");
-      const mobilePhone = document.getElementById("phoneBody");
-
-      let indianCurrency = new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumSignificantDigits: 3,
-      });
-      const formattedPrice = indianCurrency.format(price);
-      if (category === "Entertainment") {
-        entertainment.innerHTML += render(
-          data.data._id,
-          product,
-          formattedPrice,
-          category
-        );
-      } else if (category === "Food") {
-        food.innerHTML += render(
-          data.data._id,
-          product,
-          formattedPrice,
-          category
-        );
-      } else {
-        mobilePhone.innerHTML += render(
-          data.data._id,
-          product,
-          formattedPrice,
-          category
-        );
-      }
+      render(data.data._id, product, price, category);
     }
   } catch (err) {
     console.log(err.message);
@@ -138,38 +123,7 @@ const retriveData = async () => {
     });
 
     data.data.forEach((el) => {
-      const entertainment = document.getElementById("entertainmentBody");
-      const food = document.getElementById("foodBody");
-      const mobilePhone = document.getElementById("phoneBody");
-
-      let indianCurrency = new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumSignificantDigits: 3,
-      });
-      const formattedPrice = indianCurrency.format(el.price);
-      if (el.category === "Entertainment") {
-        entertainment.innerHTML += render(
-          el._id,
-          el.product,
-          formattedPrice,
-          el.category
-        );
-      } else if (el.category === "Food") {
-        food.innerHTML += render(
-          el._id,
-          el.product,
-          formattedPrice,
-          el.category
-        );
-      } else {
-        mobilePhone.innerHTML += render(
-          el._id,
-          el.product,
-          formattedPrice,
-          el.category
-        );
-      }
+      render(el._id, el.product, el.price, el.category);
     });
   } catch (err) {
     console.log(err.message);
